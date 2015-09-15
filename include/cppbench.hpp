@@ -28,7 +28,7 @@ protected:
 	// These are the things that each benchmark needs to implement.
 	
 	virtual void run_iteration() = 0;
-	virtual void finish_iteration() = 0;
+	virtual void finish_iteration() {};
 
 private:
 	int mNumTrials;
