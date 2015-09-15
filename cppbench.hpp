@@ -34,3 +34,5 @@ private:
 	int mNumTrials;
 	int64_t mTotalTime;
 };
+
+#include "cppbench-impl.hpp"

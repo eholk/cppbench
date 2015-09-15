@@ -1,4 +1,4 @@
-#include "common.hpp"
+#pragma once
 
 #include <iostream>
 
