@@ -10,28 +10,41 @@ uint64_t nanotime();
    running, making statistics, etc.
  */
 class Benchmark {
-public:
-	Benchmark(int num_trials = 10);
-	
-	void run();
 
+public:
 	virtual void setup();
 	virtual void cleanup();
 
-	double timePerIteration() const;
-	double timePerIterationMicros() const;
-
-	void setNumTrials(int num_trials);
-	int getNumTrials() const;
-	
-protected:
-	// These are the things that each benchmark needs to implement.
-	
+	// These are the things that each benchmark needs to implement.	
 	virtual void run_iteration() = 0;
 	virtual void finish_iteration() {};
+};
 
-private:
-	int mNumTrials;
+class IBenchmarkRunner {
+public:
+	virtual void run(Benchmark &bench) = 0;
+
+    virtual double timePerIteration() const = 0;
+	virtual double timePerIterationMicros() const = 0;
+
+	virtual void setNumTrials(int num_trials) = 0;
+	virtual int getNumTrials() const = 0;
+};
+
+class SimpleBenchmarkRunner : public IBenchmarkRunner {
+public:
+    SimpleBenchmarkRunner(int num_trials = 10);
+
+    virtual void run(Benchmark &bench);
+
+    virtual double timePerIteration() const;
+	virtual double timePerIterationMicros() const;
+
+	virtual void setNumTrials(int num_trials);
+	virtual int getNumTrials() const;
+
+protected:
+    int mNumTrials;
 	int64_t mTotalTime;
 };
 

@@ -12,7 +12,7 @@ uint64_t nanotime() {
 }
 
 
-Benchmark::Benchmark(int num_trials)
+SimpleBenchmarkRunner::SimpleBenchmarkRunner(int num_trials)
 	: mNumTrials(num_trials), mTotalTime(0)
 {}
 
@@ -22,48 +22,48 @@ Benchmark::Benchmark(int num_trials)
    It runs it a couple of times just to warm everything up, and then
    does num_trials iterations of the benchmark for time.
  */
-void Benchmark::run() {
-	setup();
+void SimpleBenchmarkRunner::run(Benchmark &bench) {
+	bench.setup();
 
 	// Warm up.
-	run_iteration();
-	run_iteration();
-	finish_iteration();
+	bench.run_iteration();
+	bench.run_iteration();
+	bench.finish_iteration();
 
 	// okay, now for time.
 	uint64_t start1 = nanotime();
 	for(int i = 0; i < mNumTrials; ++i) {
-		finish_iteration();
+		bench.finish_iteration();
 	}
 	uint64_t stop1 = nanotime();
 
 	uint64_t start2 = nanotime();
 	for(int i = 0; i < mNumTrials; ++i) {
-		run_iteration();
-		finish_iteration();
+		bench.run_iteration();
+		bench.finish_iteration();
 	}
 	uint64_t stop2 = nanotime();
 
 	mTotalTime = (stop2 - start2) - (stop1 - start1);
 	
-	cleanup();
+	bench.cleanup();
 }
 
-double Benchmark::timePerIterationMicros() const {
+double SimpleBenchmarkRunner::timePerIterationMicros() const {
 	return double(mTotalTime) / (mNumTrials * 1000);
 }
 
-double Benchmark::timePerIteration() const {
+double SimpleBenchmarkRunner::timePerIteration() const {
 	return double(mTotalTime) / mNumTrials / 1e9;
 }
 
 void Benchmark::setup() {}
 void Benchmark::cleanup() {}
 
-void Benchmark::setNumTrials(int num) {
+void SimpleBenchmarkRunner::setNumTrials(int num) {
 	mNumTrials = num;
 }
 
-int Benchmark::getNumTrials() const {
+int SimpleBenchmarkRunner::getNumTrials() const {
 	return mNumTrials;
 }
