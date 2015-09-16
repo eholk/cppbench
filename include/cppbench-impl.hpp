@@ -2,7 +2,10 @@
 
 #include <iostream>
 
+#include <boost/math/distributions/students_t.hpp>
+
 using namespace std;
+using namespace boost::math;
 
 uint64_t nanotime() {
     uint64_t ns_per_s = 1000000000LL;
@@ -120,4 +123,26 @@ double AdvancedBenchmarkRunner::getStdDev() const {
     }
 
     return sqrt(var) / getNumTrials();
+}
+
+double AdvancedBenchmarkRunner::getHalfWidth(double level) const {
+	students_t dist(getNumTrials() - 1);
+
+	auto alpha = (1.0 - level) / 2;
+	
+	double T = quantile(complement(dist, alpha));
+	assert(T > 0);
+	return T * getStdDev() / sqrt(double(getNumTrials()));
+}
+
+double AdvancedBenchmarkRunner::confidenceWidth(double level) const {
+	return 2.0 * getHalfWidth(level);
+}
+
+std::pair<double, double>
+AdvancedBenchmarkRunner::confidenceInterval(double level) const {
+	auto w = getHalfWidth(level);
+	auto mu = timePerIteration();
+
+	return std::make_pair(mu - w, mu + w);
 }

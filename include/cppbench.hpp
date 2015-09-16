@@ -66,13 +66,19 @@ public:
 	virtual void setNumTrials(int num_trials);
 	virtual int getNumTrials() const;
 
+	/// Return the sample standard deviation
     double getStdDev() const;
 
+	double confidenceWidth(double level = 0.95) const;
+	std::pair<double, double> confidenceInterval(double level = 0.95) const;
+	
 protected:
     int mNumTrials;
 
     /// The time for each trial in nanoseconds.
     std::vector<double> mTrials;
+
+	double getHalfWidth(double level) const;
 };
 
 #include "cppbench-impl.hpp"
