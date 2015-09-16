@@ -3,6 +3,8 @@
 #include <inttypes.h>
 #include <time.h>
 
+#include <vector>
+
 uint64_t nanotime();
 
 /**
@@ -46,6 +48,31 @@ public:
 protected:
     int mNumTrials;
 	int64_t mTotalTime;
+};
+
+/**
+   This benchmark runner can computer statistics like standard
+   deviation and confidence interval.
+ */
+class AdvancedBenchmarkRunner : public IBenchmarkRunner {
+public:
+    AdvancedBenchmarkRunner(int num_trials = 10) : mNumTrials(num_trials) {}
+    
+    virtual void run(Benchmark &bench);
+
+    virtual double timePerIteration() const;
+	virtual double timePerIterationMicros() const;
+
+	virtual void setNumTrials(int num_trials);
+	virtual int getNumTrials() const;
+
+    double getStdDev() const;
+
+protected:
+    int mNumTrials;
+
+    /// The time for each trial in nanoseconds.
+    std::vector<double> mTrials;
 };
 
 #include "cppbench-impl.hpp"

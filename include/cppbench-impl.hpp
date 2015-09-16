@@ -67,3 +67,57 @@ void SimpleBenchmarkRunner::setNumTrials(int num) {
 int SimpleBenchmarkRunner::getNumTrials() const {
 	return mNumTrials;
 }
+
+void AdvancedBenchmarkRunner::run(Benchmark &bench) {
+    mTrials.clear();
+	bench.setup();
+
+	// Warm up.
+	bench.run_iteration();
+	bench.run_iteration();
+	bench.finish_iteration();
+
+	// okay, now for time.
+	for(int i = 0; i < mNumTrials; ++i) {
+        auto start = nanotime();
+		bench.run_iteration();
+        auto stop = nanotime();
+		bench.finish_iteration();
+
+        mTrials.push_back(stop - start);
+	}
+	
+	bench.cleanup();
+}
+
+double AdvancedBenchmarkRunner::timePerIterationMicros() const {
+    double total = 0;
+    for(auto t : mTrials) {
+        total += t;
+    }
+	return total / (mNumTrials * 1000);
+}
+
+double AdvancedBenchmarkRunner::timePerIteration() const {
+	return timePerIterationMicros() / 1e6;
+}
+
+void AdvancedBenchmarkRunner::setNumTrials(int num) {
+	mNumTrials = num;
+}
+
+int AdvancedBenchmarkRunner::getNumTrials() const {
+	return mNumTrials;
+}
+
+double AdvancedBenchmarkRunner::getStdDev() const {
+    auto mean = timePerIteration();
+
+    double var = 0;
+    for(auto t : mTrials) {
+        auto x = (t / 1e9) - mean;
+        var += x * x;
+    }
+
+    return sqrt(var) / getNumTrials();
+}
