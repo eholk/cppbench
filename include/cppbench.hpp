@@ -66,6 +66,8 @@ public:
 	virtual void setNumTrials(int num_trials);
 	virtual int getNumTrials() const;
 
+    double getSample(int i) const;
+    
 	/// Return the sample standard deviation
     double getStdDev() const;
 

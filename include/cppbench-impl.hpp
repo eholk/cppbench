@@ -146,3 +146,7 @@ AdvancedBenchmarkRunner::confidenceInterval(double level) const {
 
 	return std::make_pair(mu - w, mu + w);
 }
+
+double AdvancedBenchmarkRunner::getSample(int i) const {
+    return double(mTrials[i]) / 1e9;
+}
